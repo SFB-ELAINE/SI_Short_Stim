@@ -364,3 +364,36 @@ ggsave(filename = paste(output_dir, "betaactin_cell.png", sep="/"),
 # ggsave(filename = paste(output_dir, "bactin_nuc.png", sep="/"),
 #        width = 297, height = 210, units = "mm")
 
+
+# Plotting histograms for every experiment
+
+# bcat_corrected_total_fluorescence_nucleus_per_no_of_nuclei
+number_of_experiments <- max(df_data$experiment_number)
+experiment_groups <- unique(df_data$experiment_group)
+time_points <- unique(df_data$end_time)
+
+for(i in 1:number_of_experiments){
+  for(j in experiment_groups){
+    df_subset <- df_data[df_data$experiment_number == i & df_data$experiment_group == j,]
+    plot_hist <- ggplot(df_subset,
+                        aes(x=bcat_corrected_total_fluorescence_nucleus_per_no_of_nuclei,
+                            color=end_time)) +
+      geom_histogram(fill="white", alpha=0.5, position="identity", binwidth = 5) +
+      scale_x_continuous(expand = c(0, 0), limits = c(0,150)) +
+      scale_y_continuous(expand = c(0, 0), limits = c(0,8), breaks = seq(0,8,2)) +
+      theme_bw(base_size = 24) +
+      theme(axis.title=element_text(size=18)) +
+      labs(title=paste("Exp: ", i, ", Group: ", j, sep=""))
+      #ylab("Ratio of corrected total fluorescence of Beta-Actin\nabove cell per # of nuclei (Stim/Control)") +
+      #xlab("End time")
+
+    #print(plot_green_cell)
+    plot_name <- paste("hist_bcat_corrected_total_fluorescence_nucleus_per_no_of_nuclei_exp_", i, "_", j, sep="")
+
+    ggsave(filename = paste(output_dir, "/", plot_name, ".pdf", sep=""),
+           width = 297, height = 210, units = "mm")
+    ggsave(filename = paste(output_dir, "/", plot_name, ".png", sep=""),
+           width = 297, height = 210, units = "mm")
+
+  }
+}
